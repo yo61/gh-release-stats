@@ -24,6 +24,8 @@ from release_stats import classify_asset
         ("SHA256SUMS", "sha"),
         # Anything else
         ("README.md", "other"),
+        ("WINDOWS", "other"),  # patterns are case-sensitive by design
+        ("SHA256sums", "other"),  # SHA256SUMS only — variant cases don't match
         ("", "other"),
     ],
 )

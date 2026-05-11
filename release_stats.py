@@ -11,8 +11,9 @@ from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from typing import Any
 
-# Asset filename → column key. Order matters: arm64 patterns must be
-# checked before amd64/x86_64 patterns to avoid false positives.
+# Asset filename → column key. Listed in display order (arm64 before
+# x86_64 within each OS group is convention only — the patterns are
+# unambiguous, so order doesn't affect correctness).
 _CLASSIFIERS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"linux[_-]arm64"), "larm"),
     (re.compile(r"linux[_-](?:amd64|x86_64)"), "lx86"),
@@ -253,6 +254,7 @@ def _die(msg: str) -> int:
 
 
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """Parse argv via argparse and return the resulting namespace."""
     parser = argparse.ArgumentParser(
         prog="gh release-stats",
         description="Print GitHub release-asset download stats.",

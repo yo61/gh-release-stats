@@ -97,6 +97,27 @@ def test_render_json_schema() -> None:
         "sha256sums": 1,
         "grand_total": 11,
     }
+    # Pin field order — the spec requires a specific JSON layout.
+    assert list(doc.keys()) == ["repo", "fetched_at", "releases", "totals"]
+    assert list(doc["releases"][0].keys()) == [
+        "tag",
+        "linux_x86_64",
+        "linux_arm64",
+        "macos_x86_64",
+        "macos_arm64",
+        "windows",
+        "sha256sums",
+        "total",
+    ]
+    assert list(doc["totals"].keys()) == [
+        "linux_x86_64",
+        "linux_arm64",
+        "macos_x86_64",
+        "macos_arm64",
+        "windows",
+        "sha256sums",
+        "grand_total",
+    ]
 
 
 def test_render_json_ends_with_newline_and_is_pretty() -> None:
