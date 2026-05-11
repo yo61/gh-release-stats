@@ -45,3 +45,24 @@ def test_run_gh_raises_with_fallback_on_empty_stderr(monkeypatch: pytest.MonkeyP
     monkeypatch.setattr(rs.subprocess, "run", fail)
     with pytest.raises(rs.GhError, match="gh exited 2"):
         rs.run_gh(["api", "/x"])
+
+
+def test_resolve_repo_returns_arg_unchanged(monkeypatch: pytest.MonkeyPatch) -> None:
+    called: list[list[str]] = []
+
+    def fake_run_gh(args: list[str]) -> str:
+        called.append(args)
+        return ""
+
+    monkeypatch.setattr(rs, "run_gh", fake_run_gh)
+    assert rs.resolve_repo("yo61/go-udap") == "yo61/go-udap"
+    assert called == []  # gh was not invoked
+
+
+def test_resolve_repo_calls_gh_when_arg_is_none(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_run_gh(args: list[str]) -> str:
+        assert args == ["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"]
+        return "yo61/go-udap\n"
+
+    monkeypatch.setattr(rs, "run_gh", fake_run_gh)
+    assert rs.resolve_repo(None) == "yo61/go-udap"

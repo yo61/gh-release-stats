@@ -207,3 +207,20 @@ def run_gh(args: list[str]) -> str:
     if result.returncode != 0:
         raise GhError(result.stderr.strip() or f"gh exited {result.returncode}")
     return result.stdout
+
+
+def resolve_repo(arg: str | None) -> str:
+    """Return ``arg`` if given, else delegate to ``gh repo view``.
+
+    Args:
+        arg: Either ``owner/name`` or ``None``.
+
+    Returns:
+        ``owner/name`` of the target repository.
+
+    Raises:
+        GhError: Propagated from ``run_gh`` if the user is not in a repo.
+    """
+    if arg:
+        return arg
+    return run_gh(["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"]).strip()
