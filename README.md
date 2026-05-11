@@ -16,10 +16,6 @@ Requires Python 3.13+ on `PATH`.
 
 See `gh release-stats --help`. Detailed examples will be added once the implementation lands.
 
-## Development
-
-See `docs/superpowers/specs/2026-05-11-gh-release-stats-design.md` for the design.
-
 ## License
 
 MIT
