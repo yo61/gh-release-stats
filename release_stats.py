@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -178,3 +179,31 @@ def render_json(repo: str, rows: list[Row], totals: Totals, *, fetched_at: str) 
         "totals": asdict(totals),
     }
     return json.dumps(doc, indent=2) + "\n"
+
+
+class GhError(RuntimeError):
+    """Raised when `gh` exits non-zero. Carries gh's stderr verbatim."""
+
+
+def run_gh(args: list[str]) -> str:
+    """Run ``gh <args...>`` and return stdout.
+
+    Args:
+        args: Arguments to pass to ``gh`` (the binary name itself is prepended).
+
+    Returns:
+        The captured stdout as a string.
+
+    Raises:
+        FileNotFoundError: If ``gh`` is not on PATH.
+        GhError: If ``gh`` exits non-zero.
+    """
+    result = subprocess.run(
+        ["gh", *args],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise GhError(result.stderr.strip() or f"gh exited {result.returncode}")
+    return result.stdout
