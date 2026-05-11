@@ -36,3 +36,12 @@ def test_run_gh_raises_with_stderr_on_nonzero(monkeypatch: pytest.MonkeyPatch) -
     with pytest.raises(rs.GhError) as ei:
         rs.run_gh(["api", "/x"])
     assert "auth required" in str(ei.value)
+
+
+def test_run_gh_raises_with_fallback_on_empty_stderr(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fail(cmd: list[str], **kw: object) -> subprocess.CompletedProcess:
+        return subprocess.CompletedProcess(cmd, 2, stdout="", stderr="")
+
+    monkeypatch.setattr(rs.subprocess, "run", fail)
+    with pytest.raises(rs.GhError, match="gh exited 2"):
+        rs.run_gh(["api", "/x"])
