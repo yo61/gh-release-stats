@@ -301,9 +301,11 @@ test failure directly.
 - **Pre-commit:** `prek install` per the user's global standard. Hooks for
   ruff, ty, shellcheck, basic file hygiene (trailing whitespace, EOF, large
   files, YAML).
-- **Distribution:** primary channel is `gh extension install
-  yo61/gh-release-stats`, tracking `main`. Homebrew tap is under
-  consideration — see §12.
+- **Distribution:** single channel — `gh extension install
+  yo61/gh-release-stats`, tracking `main`. No Homebrew tap, no PyPI
+  package: the tool is a `gh` subcommand and only useful to `gh` users,
+  who already have `gh extension install` as a first-class,
+  auto-discoverable mechanism.
 - **Release:** no semver release pipeline for v1. If versioned releases
   become useful later, we can add `release-please` or `semantic-release`
   then.
@@ -321,8 +323,5 @@ test failure directly.
 
 ## 12. Open questions
 
-- **Homebrew tap as a second distribution channel?** Pending decision.
-  Pro: familiar `brew install` UX. Con: the tool is a `gh` subcommand and
-  only useful to `gh` users, who already have `gh extension install` as a
-  first-class, auto-discoverable mechanism. Recommendation: skip — single
-  channel.
+None blocking v1. All design questions raised during brainstorming have
+been resolved.
