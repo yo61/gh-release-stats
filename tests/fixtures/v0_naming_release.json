@@ -1,0 +1,11 @@
+[
+  {
+    "tag_name": "v0.1.0",
+    "assets": [
+      { "name": "go-udap-darwin-amd64.zip", "download_count": 1 },
+      { "name": "go-udap-darwin-arm64.zip", "download_count": 1 },
+      { "name": "go-udap-linux-amd64.zip", "download_count": 5 },
+      { "name": "go-udap-windows-amd64.exe.zip", "download_count": 17 }
+    ]
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "tag_name": "v1.0.0",
+    "assets": [
+      { "name": "go-udap_1.0.0_linux_x86_64.tar.gz", "download_count": 7 },
+      { "name": "go-udap_1.0.0_macos_arm64.tar.gz", "download_count": 3 },
+      { "name": "SHA256SUMS", "download_count": 1 }
+    ]
+  }
+]
