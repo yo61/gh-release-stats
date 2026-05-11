@@ -122,11 +122,12 @@ _COLUMNS: tuple[tuple[str, str, str], ...] = (
     ("Total", "total", "grand_total"),
 )
 
-_COL_GAP = "   "
-
 
 def render_text(rows: list[Row], totals: Totals) -> str:
-    """Render rows + totals as an aligned plain-text table.
+    """Render rows + totals as a bordered plain-text table.
+
+    Uses Unicode single-line box-drawing characters so the table reads
+    as a solid grid in any monospaced terminal that supports UTF-8.
 
     Args:
         rows: Per-release rows (in display order).
@@ -149,18 +150,25 @@ def render_text(rows: list[Row], totals: Totals) -> str:
 
     widths = [max(len(c) for c in col) for col in cells]
 
+    def hline(left: str, mid: str, right: str) -> str:
+        return left + mid.join("─" * (w + 2) for w in widths) + right
+
     def fmt(values: list[str]) -> str:
         parts: list[str] = []
         for i, (v, w) in enumerate(zip(values, widths, strict=True)):
-            parts.append(v.ljust(w) if i == 0 else v.rjust(w))
-        return _COL_GAP.join(parts)
+            cell = v.ljust(w) if i == 0 else v.rjust(w)
+            parts.append(f" {cell} ")
+        return "│" + "│".join(parts) + "│"
+
+    top = hline("┌", "┬", "┐")
+    mid = hline("├", "┼", "┤")
+    bot = hline("└", "┴", "┘")
 
     header = fmt([col[0] for col in cells])
-    sep = _COL_GAP.join("-" * w for w in widths)
     data_lines = [fmt([col[i] for col in cells]) for i in range(1, len(cells[0]) - 1)]
     total_line = fmt([col[-1] for col in cells])
 
-    lines = [header, sep, *data_lines, sep, total_line]
+    lines = [top, header, mid, *data_lines, mid, total_line, bot]
     return "\n".join(lines) + "\n"
 
 

@@ -7,11 +7,13 @@ import json
 from release_stats import Row, Totals, render_json, render_text
 
 EXPECTED_SINGLE = """\
-Tag      linux x86_64   linux arm64   macos x86_64   macos arm64   windows   SHA256SUMS   Total
-------   ------------   -----------   ------------   -----------   -------   ----------   -----
-v1.0.0              7             0              0             3         0            1      11
-------   ------------   -----------   ------------   -----------   -------   ----------   -----
-Total               7             0              0             3         0            1      11
+┌────────┬──────────────┬─────────────┬──────────────┬─────────────┬─────────┬────────────┬───────┐
+│ Tag    │ linux x86_64 │ linux arm64 │ macos x86_64 │ macos arm64 │ windows │ SHA256SUMS │ Total │
+├────────┼──────────────┼─────────────┼──────────────┼─────────────┼─────────┼────────────┼───────┤
+│ v1.0.0 │            7 │           0 │            0 │           3 │       0 │          1 │    11 │
+├────────┼──────────────┼─────────────┼──────────────┼─────────────┼─────────┼────────────┼───────┤
+│ Total  │            7 │           0 │            0 │           3 │       0 │          1 │    11 │
+└────────┴──────────────┴─────────────┴──────────────┴─────────────┴─────────┴────────────┴───────┘
 """
 
 
@@ -35,11 +37,13 @@ def test_render_text_single_release() -> None:
 def test_render_text_empty_rows_still_has_header_and_totals() -> None:
     out = render_text([], Totals(0, 0, 0, 0, 0, 0, 0))
     lines = out.splitlines()
-    # header + sep + sep + total = exactly 4 lines, no data rows
-    assert len(lines) == 4
-    assert lines[0].startswith("Tag")
-    assert lines[1] == lines[2]  # both separators identical
-    assert lines[3].startswith("Total")
+    # top + header + mid + mid + total + bottom = exactly 6 lines, no data rows
+    assert len(lines) == 6
+    assert lines[0].startswith("┌") and lines[0].endswith("┐")
+    assert lines[1].startswith("│ Tag")
+    assert lines[2] == lines[3]  # both mid separators identical
+    assert lines[4].startswith("│ Total")
+    assert lines[5].startswith("└") and lines[5].endswith("┘")
     assert out.endswith("\n")
 
 
@@ -50,11 +54,11 @@ def test_render_text_long_tag_widens_first_column() -> None:
         Row("v999.999.999-very-long", 1, 0, 0, 0, 0, 0, 1),
     ]
     out = render_text(rows, Totals(2, 0, 0, 0, 0, 0, 2))
-    header_line = out.splitlines()[0]
+    header_line = out.splitlines()[1]  # line 0 is the top border, line 1 is the header
     longest_tag = "v999.999.999-very-long"
     # Tag column width = len(longest_tag) = 22 (label "Tag" is shorter).
-    # Tag is left-aligned, then 3-space gap, then the next column ("linux x86_64").
-    expected_prefix = "Tag".ljust(len(longest_tag)) + "   " + "linux x86_64"
+    # Tag is left-aligned inside the bordered cell, then the next column ("linux x86_64").
+    expected_prefix = "│ " + "Tag".ljust(len(longest_tag)) + " │ linux x86_64"
     assert header_line.startswith(expected_prefix)
 
 
