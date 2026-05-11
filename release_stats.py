@@ -101,3 +101,58 @@ def aggregate(releases: list[dict[str, Any]]) -> tuple[list[Row], Totals]:
 
     totals = Totals(**grand, grand_total=sum(grand.values()))
     return rows, totals
+
+
+# (display_label, Row attribute name, Totals attribute name)
+# Order is the rendering order, left to right.
+_COLUMNS: tuple[tuple[str, str, str], ...] = (
+    ("Tag", "tag", ""),  # special: not numeric, no Totals attr
+    ("linux x86_64", "linux_x86_64", "linux_x86_64"),
+    ("linux arm64", "linux_arm64", "linux_arm64"),
+    ("macos x86_64", "macos_x86_64", "macos_x86_64"),
+    ("macos arm64", "macos_arm64", "macos_arm64"),
+    ("windows", "windows", "windows"),
+    ("SHA256SUMS", "sha256sums", "sha256sums"),
+    ("Total", "total", "grand_total"),
+)
+
+_COL_GAP = "   "
+
+
+def render_text(rows: list[Row], totals: Totals) -> str:
+    """Render rows + totals as an aligned plain-text table.
+
+    Args:
+        rows: Per-release rows (in display order).
+        totals: Cross-release totals (rendered as the bottom row).
+
+    Returns:
+        The full table as a single UTF-8 string ending with a newline.
+    """
+    # Build raw cell values for each column (header + data + total).
+    cells: list[list[str]] = []
+    for label, row_attr, tot_attr in _COLUMNS:
+        col = [label]
+        for r in rows:
+            col.append(str(getattr(r, row_attr)))
+        if tot_attr:
+            col.append(str(getattr(totals, tot_attr)))
+        else:
+            col.append("Total")
+        cells.append(col)
+
+    widths = [max(len(c) for c in col) for col in cells]
+
+    def fmt(values: list[str]) -> str:
+        parts: list[str] = []
+        for i, (v, w) in enumerate(zip(values, widths, strict=True)):
+            parts.append(v.ljust(w) if i == 0 else v.rjust(w))
+        return _COL_GAP.join(parts)
+
+    header = fmt([col[0] for col in cells])
+    sep = _COL_GAP.join("-" * w for w in widths)
+    data_lines = [fmt([col[i] for col in cells]) for i in range(1, len(cells[0]) - 1)]
+    total_line = fmt([col[-1] for col in cells])
+
+    lines = [header, sep, *data_lines, sep, total_line]
+    return "\n".join(lines) + "\n"
