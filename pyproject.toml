@@ -1,0 +1,31 @@
+[project]
+name = "gh-release-stats"
+version = "0.1.0"
+description = "Print GitHub release-asset download stats as a text table or JSON."
+requires-python = ">=3.13"
+authors = [{ name = "Robin Bowes" }]
+license = "MIT"
+
+[dependency-groups]
+dev = [
+    "pytest==9.0.3",
+    "pytest-cov==7.1.0",
+    "ruff==0.15.12",
+    "ty==0.0.35",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.ty.rules]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
