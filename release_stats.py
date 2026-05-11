@@ -209,6 +209,23 @@ def run_gh(args: list[str]) -> str:
     return result.stdout
 
 
+def fetch_releases(repo: str) -> list[dict[str, Any]]:
+    """Fetch all releases (paginated) for ``repo`` via ``gh api``.
+
+    Args:
+        repo: ``owner/name`` of the repository.
+
+    Returns:
+        The raw JSON list as returned by the GitHub API.
+
+    Raises:
+        GhError: From ``run_gh``.
+        json.JSONDecodeError: If gh's stdout is not valid JSON.
+    """
+    stdout = run_gh(["api", f"repos/{repo}/releases", "--paginate"])
+    return json.loads(stdout)
+
+
 def resolve_repo(arg: str | None) -> str:
     """Return ``arg`` if given, else delegate to ``gh repo view``.
 

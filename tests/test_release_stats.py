@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -66,3 +68,27 @@ def test_resolve_repo_calls_gh_when_arg_is_none(monkeypatch: pytest.MonkeyPatch)
 
     monkeypatch.setattr(rs, "run_gh", fake_run_gh)
     assert rs.resolve_repo(None) == "yo61/go-udap"
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def test_fetch_releases_parses_real_fixture(monkeypatch: pytest.MonkeyPatch) -> None:
+    payload = (FIXTURES / "yo61_go-udap_releases.json").read_text()
+
+    def fake_run_gh(args: list[str]) -> str:
+        assert args == ["api", "repos/yo61/go-udap/releases", "--paginate"]
+        return payload
+
+    monkeypatch.setattr(rs, "run_gh", fake_run_gh)
+    releases = rs.fetch_releases("yo61/go-udap")
+    assert isinstance(releases, list)
+    assert len(releases) > 0
+    assert "tag_name" in releases[0]
+    assert "assets" in releases[0]
+
+
+def test_fetch_releases_raises_on_malformed_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(rs, "run_gh", lambda _args: "not json")
+    with pytest.raises(json.JSONDecodeError):
+        rs.fetch_releases("yo61/go-udap")
