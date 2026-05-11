@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import subprocess
+import sys
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 # Asset filename → column key. Order matters: arm64 patterns must be
@@ -241,3 +244,64 @@ def resolve_repo(arg: str | None) -> str:
     if arg:
         return arg
     return run_gh(["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"]).strip()
+
+
+def _die(msg: str) -> int:
+    """Write ``error: <msg>`` to stderr and return exit code 2."""
+    print(f"error: {msg}", file=sys.stderr)
+    return 2
+
+
+def _parse_args(argv: list[str] | None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="gh release-stats",
+        description="Print GitHub release-asset download stats.",
+    )
+    parser.add_argument(
+        "repo",
+        nargs="?",
+        help="owner/name (default: current repo via 'gh repo view')",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="emit JSON instead of a text table",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entry point.
+
+    Args:
+        argv: Argument list (excluding the program name). ``None`` means
+            read from ``sys.argv``.
+
+    Returns:
+        Process exit code (0 success, 2 expected failure, 130 Ctrl-C).
+    """
+    try:
+        args = _parse_args(argv)
+        repo = resolve_repo(args.repo)
+        releases = fetch_releases(repo)
+        if not releases:
+            return _die(f"{repo} has no releases")
+        rows, totals = aggregate(releases)
+        if args.json:
+            fetched_at = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+            output = render_json(repo, rows, totals, fetched_at=fetched_at)
+        else:
+            output = render_text(rows, totals)
+        try:
+            sys.stdout.write(output)
+        except BrokenPipeError:
+            return 0
+        return 0
+    except FileNotFoundError:
+        return _die("gh CLI not found on PATH; install from https://cli.github.com/")
+    except GhError as exc:
+        return _die(str(exc))
+    except json.JSONDecodeError as exc:
+        return _die(f"failed to parse gh output: {exc.msg}")
+    except KeyboardInterrupt:
+        return 130
