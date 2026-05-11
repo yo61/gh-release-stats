@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import re
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any
 
 # Asset filename → column key. Order matters: arm64 patterns must be
@@ -156,3 +157,24 @@ def render_text(rows: list[Row], totals: Totals) -> str:
 
     lines = [header, sep, *data_lines, sep, total_line]
     return "\n".join(lines) + "\n"
+
+
+def render_json(repo: str, rows: list[Row], totals: Totals, *, fetched_at: str) -> str:
+    """Render rows + totals as a pretty-printed JSON document.
+
+    Args:
+        repo: ``owner/name`` of the repository (for traceability).
+        rows: Per-release rows (in display order).
+        totals: Cross-release totals.
+        fetched_at: ISO-8601 UTC timestamp of when ``gh api`` was called.
+
+    Returns:
+        UTF-8 JSON, indent=2, with a trailing newline.
+    """
+    doc = {
+        "repo": repo,
+        "fetched_at": fetched_at,
+        "releases": [asdict(r) for r in rows],
+        "totals": asdict(totals),
+    }
+    return json.dumps(doc, indent=2) + "\n"

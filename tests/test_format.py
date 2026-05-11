@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from release_stats import Row, Totals, render_text
+import json
+
+from release_stats import Row, Totals, render_json, render_text
 
 EXPECTED_SINGLE = """\
 Tag      linux x86_64   linux arm64   macos x86_64   macos arm64   windows   SHA256SUMS   Total
@@ -54,3 +56,50 @@ def test_render_text_long_tag_widens_first_column() -> None:
     # Tag is left-aligned, then 3-space gap, then the next column ("linux x86_64").
     expected_prefix = "Tag".ljust(len(longest_tag)) + "   " + "linux x86_64"
     assert header_line.startswith(expected_prefix)
+
+
+def test_render_json_schema() -> None:
+    rows = [
+        Row(
+            tag="v1.0.0",
+            linux_x86_64=7,
+            linux_arm64=0,
+            macos_x86_64=0,
+            macos_arm64=3,
+            windows=0,
+            sha256sums=1,
+            total=11,
+        )
+    ]
+    totals = Totals(7, 0, 0, 3, 0, 1, 11)
+    out = render_json("yo61/go-udap", rows, totals, fetched_at="2026-05-11T14:32:00Z")
+    doc = json.loads(out)
+    assert doc["repo"] == "yo61/go-udap"
+    assert doc["fetched_at"] == "2026-05-11T14:32:00Z"
+    assert doc["releases"] == [
+        {
+            "tag": "v1.0.0",
+            "linux_x86_64": 7,
+            "linux_arm64": 0,
+            "macos_x86_64": 0,
+            "macos_arm64": 3,
+            "windows": 0,
+            "sha256sums": 1,
+            "total": 11,
+        }
+    ]
+    assert doc["totals"] == {
+        "linux_x86_64": 7,
+        "linux_arm64": 0,
+        "macos_x86_64": 0,
+        "macos_arm64": 3,
+        "windows": 0,
+        "sha256sums": 1,
+        "grand_total": 11,
+    }
+
+
+def test_render_json_ends_with_newline_and_is_pretty() -> None:
+    out = render_json("a/b", [], Totals(0, 0, 0, 0, 0, 0, 0), fetched_at="2026-05-11T14:32:00Z")
+    assert out.endswith("\n")
+    assert "\n  " in out  # indent=2 is in effect
