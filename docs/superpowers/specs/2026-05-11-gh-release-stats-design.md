@@ -291,14 +291,22 @@ test failure directly.
 
 - **CI:** GitHub Actions, single workflow `.github/workflows/ci.yaml`,
   matrix-free (Python 3.13 on `ubuntu-latest` is sufficient — the tool is
-  pure Python and OS-agnostic).
+  pure Python and OS-agnostic). The workflow runs `ruff check`,
+  `ruff format --check`, `ty check`, `shellcheck` on the entry script,
+  and `pytest -q --cov=release_stats --cov-fail-under=95`.
+- **CI must land in the first push to the upstream GitHub repo** —
+  i.e. `.github/workflows/ci.yaml` is committed *before* `gh repo create
+  --push`, so GitHub Actions is enabled and the very first build runs
+  end-to-end. No "wire up CI later" follow-up.
 - **Pre-commit:** `prek install` per the user's global standard. Hooks for
   ruff, ty, shellcheck, basic file hygiene (trailing whitespace, EOF, large
   files, YAML).
-- **Release:** no semver release pipeline for v1. Users install via
-  `gh extension install yo61/gh-release-stats`, which tracks `main`. If
-  versioned releases become useful later, we can add `release-please` or
-  `semantic-release` then.
+- **Distribution:** primary channel is `gh extension install
+  yo61/gh-release-stats`, tracking `main`. Homebrew tap is under
+  consideration — see §12.
+- **Release:** no semver release pipeline for v1. If versioned releases
+  become useful later, we can add `release-please` or `semantic-release`
+  then.
 - **Dependabot:** weekly cooldown, grouped updates, scoped to GH Actions
   and the dev dependency group.
 
@@ -311,7 +319,10 @@ test failure directly.
 - Mutation testing audit (`mutmut`) once the codebase stabilises.
 - `--jq` and `--template` flags to match gh's wider output convention.
 
-## 12. Open questions (deferred)
+## 12. Open questions
 
-None blocking v1. All design questions raised during brainstorming have
-been answered above.
+- **Homebrew tap as a second distribution channel?** Pending decision.
+  Pro: familiar `brew install` UX. Con: the tool is a `gh` subcommand and
+  only useful to `gh` users, who already have `gh extension install` as a
+  first-class, auto-discoverable mechanism. Recommendation: skip — single
+  channel.
