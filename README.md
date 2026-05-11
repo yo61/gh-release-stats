@@ -45,8 +45,27 @@ JSON (`--json`):
 {
   "repo": "yo61/go-udap",
   "fetched_at": "2026-05-11T14:32:00Z",
-  "releases": [{ "tag": "v1.3.9", "linux_x86_64": 1, "...": "..." }],
-  "totals": { "linux_x86_64": 21, "...": "...", "grand_total": 51 }
+  "releases": [
+    {
+      "tag": "v1.3.9",
+      "linux_x86_64": 1,
+      "linux_arm64": 0,
+      "macos_x86_64": 0,
+      "macos_arm64": 2,
+      "windows": 0,
+      "sha256sums": 0,
+      "total": 3
+    }
+  ],
+  "totals": {
+    "linux_x86_64": 21,
+    "linux_arm64": 0,
+    "macos_x86_64": 1,
+    "macos_arm64": 9,
+    "windows": 19,
+    "sha256sums": 1,
+    "grand_total": 51
+  }
 }
 ```
 
@@ -65,7 +84,7 @@ uv sync --group dev      # install dev deps in .venv/
 uv run pytest -q         # run tests
 uv run ruff check        # lint
 uv run ruff format       # format
-uv run ty check          # type-check
+uv run ty check release_stats.py    # type-check
 prek install             # install pre-commit hooks
 ```
 
