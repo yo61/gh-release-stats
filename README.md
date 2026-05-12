@@ -10,7 +10,7 @@ Distributed as a [`gh` extension](https://cli.github.com/manual/gh_extension).
 gh extension install yo61/gh-release-stats
 ```
 
-Requires Python ≥ 3.13 on `PATH`. The tool itself has no Python
+Requires Python ≥ 3.11 on `PATH`. The tool itself has no Python
 dependencies; everything is stdlib.
 
 ## Usage
