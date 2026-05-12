@@ -4,14 +4,18 @@ name: Release
 # release-please maintains a long-lived Release PR; merging it cuts
 # the tag and publishes a GitHub Release. No package publishing —
 # this is a gh extension, distributed by clone.
+#
+# Uses the SEMANTIC_RELEASE GitHub App (same one as yo61/go-udap) so
+# the Release PR is authored by the App, which lets pull_request CI
+# trigger normally — PRs created via the default GITHUB_TOKEN do not
+# trigger workflows (GitHub's loop-prevention policy).
 
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   release-please:
@@ -19,7 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'yo61'
     steps:
+      - id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  # v3.1.1
+        with:
+          app-id: ${{ secrets.SEMANTIC_RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SEMANTIC_RELEASE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7  # v5.0.0
         with:
+          token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
