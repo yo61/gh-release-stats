@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/yo61/gh-release-stats/compare/v0.1.0...v0.2.0) (2026-05-12)
+
+
+### Features
+
+* support Python 3.11+ and add a CI matrix across 3.11-3.14 ([#8](https://github.com/yo61/gh-release-stats/issues/8)) ([f1a3dab](https://github.com/yo61/gh-release-stats/commit/f1a3dab53fc7fc0f25841bea75dfa4708a6315e1))
+
 ## 0.1.0 (2026-05-12)
 
 
