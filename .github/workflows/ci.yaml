@@ -19,6 +19,11 @@ jobs:
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
           python-version: "3.13"
+          # Distinguishes lint's cache key from pytest (py3.13)'s key —
+          # without this, both jobs race on the same setup-uv cache key
+          # and one fails to save with "another job may be creating
+          # this cache" (benign, but noisy).
+          cache-suffix: lint
       - run: uv sync --group dev --frozen
       - run: uv run ruff check
       - run: uv run ruff format --check
