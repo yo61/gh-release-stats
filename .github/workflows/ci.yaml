@@ -9,7 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -22,7 +23,41 @@ jobs:
       - run: uv run ruff check
       - run: uv run ruff format --check
       - run: uv run ty check release_stats.py
+
+  pytest:
+    name: pytest (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --group dev --frozen
       - run: uv run pytest -q --cov=release_stats --cov-fail-under=95
+
+  # Aggregator. The branch ruleset requires this exact check name.
+  # Splitting `lint` and `pytest` keeps each run lean (no duplicated
+  # ruff/ty across the matrix); this job is the single signal the
+  # ruleset waits on.
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    needs: [lint, pytest]
+    if: always()
+    steps:
+      - name: aggregate
+        run: |
+          if [ "${{ needs.lint.result }}" != "success" ] || [ "${{ needs.pytest.result }}" != "success" ]; then
+            echo "lint=${{ needs.lint.result }} pytest=${{ needs.pytest.result }}"
+            exit 1
+          fi
+          echo "lint and pytest matrix all green"
 
   commitlint:
     name: commitlint
