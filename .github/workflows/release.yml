@@ -1,0 +1,25 @@
+name: Release
+
+# Triggered on push to main (which only happens via merged PRs).
+# release-please maintains a long-lived Release PR; merging it cuts
+# the tag and publishes a GitHub Release. No package publishing —
+# this is a gh extension, distributed by clone.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'yo61'
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7  # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
