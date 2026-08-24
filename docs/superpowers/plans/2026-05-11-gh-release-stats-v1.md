@@ -322,6 +322,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
 
   ```python
   """Tests for classify_asset(): asset filename → column key."""
+
   import pytest
 
   from release_stats import classify_asset
@@ -488,6 +489,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
 
   ```python
   """Shared pytest fixtures for gh-release-stats tests."""
+
   from __future__ import annotations
 
   import json
@@ -515,6 +517,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
 
   ```python
   """Tests for aggregate(): raw releases → (rows, totals)."""
+
   from __future__ import annotations
 
   from release_stats import Row, Totals, aggregate
@@ -726,6 +729,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
 
   ```python
   """Tests for render_text() and render_json()."""
+
   from __future__ import annotations
 
   from release_stats import Row, Totals, render_text
@@ -961,9 +965,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
   from dataclasses import asdict
 
 
-  def render_json(
-      repo: str, rows: list[Row], totals: Totals, *, fetched_at: str
-  ) -> str:
+  def render_json(repo: str, rows: list[Row], totals: Totals, *, fetched_at: str) -> str:
       """Render rows + totals as a pretty-printed JSON document.
 
       Args:
@@ -1030,6 +1032,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
 
   ```python
   """Tests for the gh-subprocess seam, repo resolution, fetching, and main()."""
+
   from __future__ import annotations
 
   import json
@@ -1205,9 +1208,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
       """
       if arg:
           return arg
-      return run_gh(
-          ["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"]
-      ).strip()
+      return run_gh(["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"]).strip()
   ```
 
 - [ ] **Step 7.4: Run, see pass; lint; commit**
@@ -1572,6 +1573,7 @@ The spec is committed on `docs/initial-spec`. Implementation work happens on `fe
 
   Entry point for the gh extension. All real logic lives in release_stats.py.
   """
+
   import sys
 
   from release_stats import main
