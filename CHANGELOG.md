@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.1](https://github.com/yo61/gh-release-stats/compare/v0.2.0...v0.2.1) (2026-08-28)
+
+
+### Dependencies
+
+* bump actions/checkout from 6.0.2 to 7.0.1 ([#26](https://github.com/yo61/gh-release-stats/issues/26)) ([f241131](https://github.com/yo61/gh-release-stats/commit/f2411314a329ebe5d7a681f89af1d0a19fc759d6))
+* bump astral-sh/setup-uv from 9.0.0 to 10.0.1 ([#33](https://github.com/yo61/gh-release-stats/issues/33)) ([392522e](https://github.com/yo61/gh-release-stats/commit/392522e3dec4e960705f69db834551aee9aeb27f))
+* bump https://github.com/woodruffw/zizmor-pre-commit ([#23](https://github.com/yo61/gh-release-stats/issues/23)) ([5193870](https://github.com/yo61/gh-release-stats/commit/519387066a556d3c8356584bfee14d0edcdb023c))
+* bump the actions-minor-patch group across 1 directory with 2 updates ([#25](https://github.com/yo61/gh-release-stats/issues/25)) ([ea873a0](https://github.com/yo61/gh-release-stats/commit/ea873a0b93dc821d7fc4bbfe0cb06f2cef7bddb5))
+* bump the uv-minor-patch group with 2 updates ([#32](https://github.com/yo61/gh-release-stats/issues/32)) ([1efde79](https://github.com/yo61/gh-release-stats/commit/1efde79b5a082d1e8b3392f0aa6727a171159f66))
+
 ## [0.2.0](https://github.com/yo61/gh-release-stats/compare/v0.1.0...v0.2.0) (2026-05-12)
 
 
