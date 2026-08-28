@@ -1,0 +1,19 @@
+[tools]
+# Supplies the uv that `[tool.uv] required-version` in pyproject.toml demands.
+# Pinned to the series, not a patch: mise withholds releases younger than its
+# `minimum_release_age`, so a patch pin resolves to something mise will not
+# install for days.
+uv = "0.12"
+task = "3"
+
+[env]
+# Stop ad-hoc `uv run` from rewriting uv.lock as a side effect. The lockfile
+# changes deliberately: `task uv:lock` locally, or the release-please
+# sync-lockfile job in CI.
+#
+# This value also disables the commands you would reach for to work around it.
+# `uv lock` becomes a no-op that exits 0, and `uv lock --check` degrades to a
+# warning that also exits 0 -- so neither reports drift. `uv sync --locked`,
+# which CI runs, is a hard error here. CI never loads mise, so it sees none of
+# this. `task uv:lock` lifts UV_FROZEN for exactly one command.
+UV_FROZEN = "1"
