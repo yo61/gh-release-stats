@@ -81,6 +81,19 @@ JSON (`--json`):
 
 ## Development
 
+[mise](https://mise.jdx.dev) is required for development. It supplies the uv
+version `pyproject.toml` pins via `[tool.uv] required-version` (uv refuses to
+run outside `>=0.12,<0.13`), it supplies `task`, and it sets `UV_FROZEN=1`.
+Without it you get a uv that may refuse to run, no `task`, and no protection
+against an accidental relock.
+
+```bash
+mise trust               # first time only, in this directory
+mise install             # uv 0.12.x and task, per mise.toml
+```
+
+`prek` is not supplied by mise — install it separately (`brew install prek`).
+
 ```bash
 uv sync --group dev      # install dev deps in .venv/
 uv run pytest -q         # run tests
@@ -89,6 +102,21 @@ uv run ruff format       # format
 uv run ty check release_stats.py    # type-check
 prek install             # install pre-commit hooks
 ```
+
+`mise.toml` sets `UV_FROZEN=1`, so none of the above rewrites `uv.lock` as a
+side effect. When you change dependencies or the project version, re-lock
+explicitly:
+
+```bash
+task uv:lock             # the deliberate way to change uv.lock
+```
+
+Use the task rather than plain `uv lock`: under `UV_FROZEN=1` that silently
+no-ops and still exits 0, and so does `uv lock --check`.
+
+CI runs `uv sync --group dev --locked`, which fails if `uv.lock` and
+`pyproject.toml` disagree — so an un-relocked dependency change is caught at
+PR time rather than merged silently.
 
 ## License
 
