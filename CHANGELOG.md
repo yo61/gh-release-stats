@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/yo61/gh-release-stats/compare/v0.2.1...v0.2.2) (2026-09-04)
+
+
+### Dependencies
+
+* bump the uv-minor-patch group with 2 updates ([#36](https://github.com/yo61/gh-release-stats/issues/36)) ([f9c230a](https://github.com/yo61/gh-release-stats/commit/f9c230ae4130ac7bf0f8aa128cda5fa5faf4ed89))
+
 ## [0.2.1](https://github.com/yo61/gh-release-stats/compare/v0.2.0...v0.2.1) (2026-08-28)
 
 
