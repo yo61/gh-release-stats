@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.2](https://github.com/yo61/gh-release-stats/compare/v0.2.1...v0.2.2) (2026-09-11)
+
+
+### Dependencies
+
+* bump https://github.com/woodruffw/zizmor-pre-commit ([#38](https://github.com/yo61/gh-release-stats/issues/38)) ([f8282a3](https://github.com/yo61/gh-release-stats/commit/f8282a300e7dc8c92a4a8a05ea0487da0ffd476f))
+* bump the uv-minor-patch group with 2 updates ([#36](https://github.com/yo61/gh-release-stats/issues/36)) ([f9c230a](https://github.com/yo61/gh-release-stats/commit/f9c230ae4130ac7bf0f8aa128cda5fa5faf4ed89))
+* bump the uv-minor-patch group with 2 updates ([#40](https://github.com/yo61/gh-release-stats/issues/40)) ([ee0b44c](https://github.com/yo61/gh-release-stats/commit/ee0b44ce7fa44205295f0c2efd505a8177550d6f))
+* bump zizmorcore/zizmor-action in the actions-minor-patch group ([#39](https://github.com/yo61/gh-release-stats/issues/39)) ([ba6a761](https://github.com/yo61/gh-release-stats/commit/ba6a7613477e2b19406c50bdfc93fa811ed8066c))
+
 ## [0.2.1](https://github.com/yo61/gh-release-stats/compare/v0.2.0...v0.2.1) (2026-08-28)
 
 
