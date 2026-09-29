@@ -5,7 +5,7 @@ tasks:
   default:
     desc: List available tasks
     cmds:
-      - task --list
+      - task --list-all
 
   # Two separate traps, both of which produce a silent no-op rather than an
   # error, so neither is visible without deliberately testing for it:
@@ -19,7 +19,8 @@ tasks:
   #      stripped it. `mise which` resolves past the shim to the real binary;
   #      `command -v` covers the case where uv is not mise-managed at all.
   uv:lock:
-    desc: >-
+    desc: 'Re-lock uv.lock; the only command that should change it'
+    summary: |
       Re-lock uv.lock. The only command that should change it; UV_FROZEN is "1"
       elsewhere so nothing rewrites the lockfile as a side effect.
     cmds:
