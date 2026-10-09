@@ -35,8 +35,10 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
 
-  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.12
+  # The maintained fork: upstream rhysd/actionlint stopped at 1.7.12, which rejects the
+  # ubuntu-26.04 runner label.
+  - repo: https://github.com/kjanat/actionlint
+    rev: v1.17.0
     hooks:
       - id: actionlint
 

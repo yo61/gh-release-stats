@@ -11,14 +11,14 @@ permissions:
 jobs:
   lint:
     name: lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
+      # No python-version: uv takes it from .python-version, the one pin.
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
         with:
-          python-version: "3.13"
           # Distinguishes lint's cache key from pytest (py3.13)'s key —
           # without this, both jobs race on the same setup-uv cache key
           # and one fails to save with "another job may be creating
@@ -35,17 +35,21 @@ jobs:
       # here, so local and CI cannot drift apart. zizmor is skipped: it has its
       # own job below, which the ruleset requires by name.
       - uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece  # v3.0.0
-        with:
-          prek-version: 0.4.13
         env:
           SKIP: zizmor
+          # renovate: datasource=github-releases depName=j178/prek extractVersion=^v(?<version>.+)$
+          PREK_VERSION: 0.5.4
+        with:
+          prek-version: ${{ env.PREK_VERSION }}
 
   pytest:
     name: pytest (py${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
+        # The supported range, matching requires-python, not a pin: widen it by hand when
+        # a Python is added to or dropped from support.
         python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -63,7 +67,7 @@ jobs:
   # ruleset waits on.
   test:
     name: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: [lint, pytest]
     if: always()
     steps:
@@ -78,7 +82,7 @@ jobs:
   commitlint:
     name: commitlint
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
@@ -92,15 +96,21 @@ jobs:
 
   zizmor:
     name: zizmor
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
-      - uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482  # v0.6.4
+      # The zizmor hook from .pre-commit-config.yaml, so its rev is the one zizmor pin. The
+      # token lets zizmor run its online audits (impostor commits, known-vulnerable actions);
+      # without one it skips them and still passes.
+      - uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece  # v3.0.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # renovate: datasource=github-releases depName=j178/prek extractVersion=^v(?<version>.+)$
+          PREK_VERSION: 0.5.4
         with:
-          advanced-security: false
-          persona: regular
-          version: v1.26.1
+          prek-version: ${{ env.PREK_VERSION }}
+          extra-args: zizmor --all-files

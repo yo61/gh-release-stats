@@ -27,7 +27,7 @@ permissions: {}
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: github.repository_owner == 'yo61'
     permissions:
       contents: read
@@ -54,7 +54,7 @@ jobs:
 
   sync-lockfile:
     needs: release-please
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions: {}
     steps:
       - id: create_token
@@ -166,7 +166,6 @@ jobs:
       - if: steps.pr_branch.outputs.branch != ''
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
         with:
-          python-version: "3.13"
           enable-cache: false
       # Deliberately holds no token. `uv lock` runs build backends out of the
       # checked-out pyproject.toml, on a branch selected partly by a mutable
