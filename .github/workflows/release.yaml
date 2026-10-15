@@ -28,6 +28,7 @@ permissions: {}
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.repository_owner == 'yo61'
     permissions:
       contents: read
@@ -55,6 +56,7 @@ jobs:
   sync-lockfile:
     needs: release-please
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions: {}
     steps:
       - id: create_token
